@@ -1,0 +1,37 @@
+name: Build
+
+on: [push]
+
+jobs:
+  build-and-upload:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, ubuntu-24.04-arm, macos-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - uses: actions/download-artifact@v5
+        with:
+          name: zlib-${{ matrix.os }}
+          path: zlib
+          repository: moegodot/zlib-build
+      - name: build
+        run: |
+          pip install uv
+          uv run ./build.py
+      - uses: actions/upload-artifact@v4
+        id: upload-artifact
+        with:
+          name: libpng-${{ matrix.os }}
+          path: install
+          retention-days: 90
+          compression-level: 9
+          overwrite: true
+          include-hidden-files: true
