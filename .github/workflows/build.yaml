@@ -17,19 +17,24 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
+
       - uses: actions/download-artifact@v5
         with:
           name: zlib-${{ matrix.os }}
           path: zlib
           repository: moegodot/zlib-build
+          github-token: ${{ secrets.GH_PAT }}
+          run-id: 18606853134 # ====
+
       - name: build
         run: |
           pip install uv
           uv run ./build.py
+
       - uses: actions/upload-artifact@v4
         id: upload-artifact
         with:
-          name: libpng-${{ matrix.os }}
+          name: libpng-${{ matrix.os }} # ====
           path: install
           retention-days: 90
           compression-level: 9
